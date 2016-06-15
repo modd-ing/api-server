@@ -98,6 +98,46 @@ module.exports = function( server ) {
 
         });
 
-    });
+    })
+    .post( routeBase, function( req, res, next ) {
+
+      act({
+        role: 'api',
+        path: 'users',
+        type: 'write',
+        cmd: 'post',
+        params: req.params,
+        query: req.query,
+        body: req.body
+        })
+        .then( ( reply ) => {
+
+          let status = 201,
+            payload = {
+              data: reply.data
+            };
+
+          if ( ! _.isEmpty( reply.errors ) ) {
+
+            payload = {
+              errors: reply.errors
+            };
+
+            status = routesUtil.extractAppropriateStatus( reply.errors );
+
+          }
+
+          res
+            .status( status )
+            .json( payload );
+
+        })
+        .catch( ( err ) => {
+
+          res.sendStatus( 500 );
+
+        });
+
+    });;
 
 };
