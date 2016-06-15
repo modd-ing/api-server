@@ -16,16 +16,16 @@ module.exports = function( server ) {
     .get( routeBase, function( req, res, next ) {
 
       act({
-				role: 'api',
-				path: 'users',
-				type: 'read',
-				cmd: 'get',
-				params: req.params,
-				query: req.query
-				})
-				.then( ( reply ) => {
+        role: 'api',
+        path: 'users',
+        type: 'read',
+        cmd: 'get',
+        params: req.params,
+        query: req.query
+        })
+        .then( ( reply ) => {
 
-					let status = 200,
+          let status = 200,
             payload = {
               data: reply.data
             };
@@ -40,35 +40,35 @@ module.exports = function( server ) {
 
           } else if ( _.isEmpty( reply.data ) ) {
 
-						status = 404;
+            status = 404;
 
-					}
+          }
 
-					res
-						.status( status )
-						.json( payload );
+          res
+            .status( status )
+            .json( payload );
 
-				})
-				.catch( ( err ) => {
+        })
+        .catch( ( err ) => {
 
-					res.sendStatus( 500 );
+          res.sendStatus( 500 );
 
-				});
+        });
 
     })
     .get( routeBase + '/:id', function( req, res, next ) {
 
       act({
-				role: 'api',
-				path: 'users',
-				type: 'read',
-				cmd: 'get',
-				params: req.params,
-				query: req.query
-				})
-				.then( ( reply ) => {
+        role: 'api',
+        path: 'users',
+        type: 'read',
+        cmd: 'get',
+        params: req.params,
+        query: req.query
+        })
+        .then( ( reply ) => {
 
-					let status = 200,
+          let status = 200,
             payload = {
               data: reply.data
             };
@@ -83,20 +83,20 @@ module.exports = function( server ) {
 
           } else if ( _.isEmpty( reply.data ) ) {
 
-						status = 404;
+            status = 404;
 
-					}
+          }
 
-					res
-						.status( status )
-						.json( payload );
+          res
+            .status( status )
+            .json( payload );
 
-				})
-				.catch( ( err ) => {
+        })
+        .catch( ( err ) => {
 
-					res.sendStatus( 500 );
+          res.sendStatus( 500 );
 
-				});
+        });
 
     });
 
