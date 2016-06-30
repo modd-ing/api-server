@@ -29,7 +29,9 @@ server.use( ( req, res, next ) => {
 
   if ( ! req.session ) {
 
-    process.exit( 1 );
+    res.sendStatus( 500 );
+
+    return;
 
   }
 
@@ -56,6 +58,7 @@ server.use( function( req, res, next ) {
 });
 
 // Routes: API
+require( './routes/sessions' )( server );
 require( './routes/users' )( server );
 
 server.listen( 3000 );
