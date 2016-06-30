@@ -112,7 +112,10 @@ module.exports = function( server ) {
 
       }
 
-      let queryParams = {};
+      let queryParams = {},
+        options = {
+          hidePrivate: false
+        };
 
       if ( validator.isEmail( username ) ) {
 
@@ -129,7 +132,8 @@ module.exports = function( server ) {
         path: 'users',
         type: 'read',
         cmd: 'getUsers',
-        args: queryParams
+        args: queryParams,
+        options: options
       })
       .then( ( result ) => {
 
