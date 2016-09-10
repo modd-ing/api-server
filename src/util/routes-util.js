@@ -9,7 +9,7 @@ const _ = require( 'lodash' );
  */
 exports.extractAppropriateStatus = function( objects ) {
 
-  let defaultStatus = 500;
+  const defaultStatus = 500;
 
   if ( ! _.isArray( objects ) ) {
 

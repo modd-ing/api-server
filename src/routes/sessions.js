@@ -39,7 +39,7 @@ module.exports = function( server ) {
 
       }
 
-      let username = req.body.username, // This could be email as well
+      const username = req.body.username, // This could be email as well
         password = req.body.password,
         remember = !! req.body.remember || false;
 
