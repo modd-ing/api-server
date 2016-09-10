@@ -27,7 +27,7 @@ exports.extractAppropriateStatus = function( objects ) {
 
   }
 
-  let firstObject = _.first( objects ),
+  const firstObject = _.first( objects ),
     firstStatus = firstObject.status;
 
   if ( 1 === objects.length ) {
