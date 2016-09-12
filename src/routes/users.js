@@ -138,6 +138,59 @@ module.exports = function( server ) {
 
         });
 
-    });;
+    })
+    .patch( routeBase + '/:id', function( req, res, next ) {
+
+      if ( ! req.session.consumer ) {
+
+        res.sendStatus( 403 );
+
+        return;
+
+      }
+
+      act({
+        role: 'api',
+        path: 'users',
+        type: 'write',
+        cmd: 'patch',
+        params: req.params,
+        query: req.query,
+        body: req.body,
+        consumerJWT: req.session.consumerJWT
+        })
+        .then( ( reply ) => {
+
+          let status = 200,
+            payload = {
+              data: reply.data
+            };
+
+          if ( ! _.isEmpty( reply.errors ) ) {
+
+            payload = {
+              errors: reply.errors
+            };
+
+            status = routesUtil.extractAppropriateStatus( reply.errors );
+
+          } else if ( _.isEmpty( reply.data ) ) {
+
+            status = 404;
+
+          }
+
+          res
+            .status( status )
+            .json( payload );
+
+        })
+        .catch( ( err ) => {
+
+          res.sendStatus( 500 );
+
+        });
+
+    });
 
 };
