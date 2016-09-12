@@ -61,4 +61,12 @@ server.use( function( req, res, next ) {
 require( './routes/sessions' )( server );
 require( './routes/users' )( server );
 
+// Error handling
+server.use( ( err, req, res, next ) => {
+
+  res
+    .sendStatus( err.statusCode );
+
+});
+
 server.listen( 3000 );
