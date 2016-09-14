@@ -60,6 +60,7 @@ server.use( function( req, res, next ) {
 // Routes: API
 require( './routes/sessions' )( server );
 require( './routes/users' )( server );
+require( './routes/attachments' )( server );
 
 // Error handling
 server.use( ( err, req, res, next ) => {
