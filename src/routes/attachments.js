@@ -112,19 +112,82 @@ module.exports = function( server ) {
         });
 
     })
-    .post( routeBase, uploadMiddleware.single( 'attachment' ), function( err, req, res, next ) {
+    .post(
+      routeBase,
+      uploadMiddleware.single( 'attachment' ),
+      ( req, res, next ) => {
 
-      if ( err ) {
+        act({
+          role: 'api',
+          path: 'attachments',
+          type: 'write',
+          cmd: 'post',
+          params: req.params,
+          query: req.query,
+          body: req.body,
+          file: req.file,
+          consumerJWT: req.session.consumerJWT
+          })
+          .then( ( reply ) => {
+
+            let status = 201,
+              payload = {
+                data: reply.data
+              };
+
+            if ( ! _.isEmpty( reply.errors ) ) {
+
+              payload = {
+                errors: reply.errors
+              };
+
+              status = routesUtil.extractAppropriateStatus( reply.errors );
+
+            }
+
+            res
+              .status( status )
+              .json( payload );
+
+          })
+          .catch( ( err ) => {
+
+            res.sendStatus( 500 );
+
+          });
+
+      },
+      ( err, req, res, next ) => {
 
         res
-          .status( err.status )
+          .status( err.status || 500 )
           .json({
             errors: [
               {
-                title: err.title,
-                detail: err.detail,
-                propertyName: err.propertyName,
-                status: err.status
+                title: err.title || 'Error',
+                detail: err.detail || err.message,
+                propertyName: err.propertyName || 'attachment',
+                status: err.status || 400
+              }
+            ]
+          });
+
+        return;
+
+      }
+    )
+    .patch( routeBase + '/:id', function( req, res, next ) {
+
+      if ( ! req.session.consumer ) {
+
+        res
+          .status( 403 )
+          .json({
+            errors: [
+              {
+                title: 'Unauthorized',
+                detail: 'You are not authorized to do this.',
+                status: 403
               }
             ]
           });
@@ -137,15 +200,15 @@ module.exports = function( server ) {
         role: 'api',
         path: 'attachments',
         type: 'write',
-        cmd: 'post',
+        cmd: 'patch',
         params: req.params,
         query: req.query,
         body: req.body,
-        file: req.file
+        consumerJWT: req.session.consumerJWT
         })
         .then( ( reply ) => {
 
-          let status = 201,
+          let status = 200,
             payload = {
               data: reply.data
             };
@@ -157,6 +220,75 @@ module.exports = function( server ) {
             };
 
             status = routesUtil.extractAppropriateStatus( reply.errors );
+
+          } else if ( _.isEmpty( reply.data ) ) {
+
+            status = 404;
+
+          }
+
+          res
+            .status( status )
+            .json( payload );
+
+        })
+        .catch( ( err ) => {
+
+          res.sendStatus( 500 );
+
+        });
+
+    })
+    .delete( routeBase + '/:id', function( req, res, next ) {
+
+      if ( ! req.session.consumer ) {
+
+        res
+          .status( 403 )
+          .json({
+            errors: [
+              {
+                title: 'Unauthorized',
+                detail: 'You are not authorized to do this.',
+                status: 403
+              }
+            ]
+          });
+
+        return;
+
+      }
+
+      act({
+        role: 'api',
+        path: 'attachments',
+        type: 'write',
+        cmd: 'delete',
+        params: req.params,
+        query: req.query,
+        body: req.body,
+        consumerJWT: req.session.consumerJWT
+        })
+        .then( ( reply ) => {
+
+          let status,
+            payload = {
+              data: reply.data
+            };
+
+          if ( ! _.isEmpty( reply.errors ) ) {
+
+            payload = {
+              errors: reply.errors
+            };
+
+            status = routesUtil.extractAppropriateStatus( reply.errors );
+
+          } else  {
+
+            res.sendStatus( 204 );
+
+            return;
 
           }
 

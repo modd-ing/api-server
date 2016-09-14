@@ -14,8 +14,13 @@ exports.getAttachmentUploadDestination = function( req, file, cb ) {
 
   if ( ! req.session.consumer ) {
 
-    // Unauthenticated users should not even reach this, wut?
-    cb( null, '/tmp' );
+    const err = new Error( 'Unauthorized' );
+
+    err.title = 'Unauthorized';
+    err.detail = 'You are not authorized to do this.';
+    err.propertyName = 'attachment';
+    err.status = 403;
+    cb( err, null );
 
     return;
 
@@ -49,11 +54,14 @@ exports.getAttachmentFilename = function( req, file, cb ) {
 
   if ( ! extension || -1 === allowedExtensions.indexOf( extension ) || -1 === allowedExtensionsLocal.indexOf( extension ) ) {
 
-    var error = new Error( 'File of this type is not allowed!' );
+    const err = new Error( 'File of this type is not allowed!' );
 
-    error.httpCode = 415;
+    err.title = 'File type not valid';
+    err.detail = 'File of this type is not allowed.';
+    err.propertyName = 'attachment';
+    err.status = 415;
 
-    cb( error, null );
+    cb( err, null );
 
     return;
 

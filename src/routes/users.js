@@ -143,7 +143,17 @@ module.exports = function( server ) {
 
       if ( ! req.session.consumer ) {
 
-        res.sendStatus( 403 );
+        res
+          .status( 403 )
+          .json({
+            errors: [
+              {
+                title: 'Unauthorized',
+                detail: 'You are not authorized to do this.',
+                status: 403
+              }
+            ]
+          });
 
         return;
 
