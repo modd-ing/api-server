@@ -1,6 +1,11 @@
 'use strict';
 
 const Promise = require( 'bluebird' );
+
+Promise.config({
+  cancellation: true
+});
+
 const seneca = require( '../seneca' )();
 const _ = require( 'lodash' );
 const routesUtil = require( '../util/routes-util' );
@@ -79,7 +84,7 @@ module.exports = function( server ) {
 
       }
 
-      act({
+      const promise = act({
         role: 'api',
         path: 'users',
         type: 'read',
@@ -94,6 +99,8 @@ module.exports = function( server ) {
           // User not found, but don't let them know, we don't want to share that information
           res.sendStatus( 201 );
 
+          promise.cancel();
+
           return;
 
         }
@@ -101,35 +108,30 @@ module.exports = function( server ) {
         const user = result.data[0],
           userId = user.id;
 
-        act({
+        return act({
           role: 'api',
           path: 'tokens',
           cmd: 'post',
           userId: userId,
           type: type
-        })
-        .then( ( result ) => {
-
-          if ( ! _.isEmpty( reply.errors ) ) {
-
-            res
-              .status( routesUtil.extractAppropriateStatus( reply.errors ) )
-              .json({
-                errors: reply.errors
-              });
-
-            return;
-
-          }
-
-          res.sendStatus( 201 );
-
-        })
-        .catch( ( err ) => {
-
-          res.sendStatus( 500 );
-
         });
+
+      })
+      .then( ( result ) => {
+
+        if ( ! _.isEmpty( result.errors ) ) {
+
+          res
+            .status( routesUtil.extractAppropriateStatus( result.errors ) )
+            .json({
+              errors: result.errors
+            });
+
+          return;
+
+        }
+
+        res.sendStatus( 201 );
 
       })
       .catch( ( err ) => {
