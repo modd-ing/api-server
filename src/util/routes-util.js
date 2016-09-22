@@ -32,7 +32,7 @@ exports.extractAppropriateStatus = function( objects ) {
 
   if ( 1 === objects.length ) {
 
-    return firstStatus;
+    return firstStatus || defaultStatus;
 
   }
 
@@ -44,7 +44,7 @@ exports.extractAppropriateStatus = function( objects ) {
 
   if ( objects.every( statusIsEqualToFirstStatus ) ) {
 
-    return firstStatus;
+    return firstStatus || defaultStatus;
 
   }
 

@@ -87,31 +87,6 @@ module.exports = function( server ) {
 
       }
 
-      if (
-        ! validator.isEmail( username ) &&
-        ! validator.isLength( username, 2 )
-      ) {
-
-        let status = 400,
-          payload = {
-            errors: [
-              {
-                title: 'Username not valid',
-                detail: 'Username has to have at least two characters.',
-                propertyName: 'username',
-                status: 400
-              }
-            ]
-          };
-
-        res
-          .status( status )
-          .json( payload );
-
-        return;
-
-      }
-
       let queryParams = {},
         options = {
           hidePrivate: false

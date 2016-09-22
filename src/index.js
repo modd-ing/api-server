@@ -61,12 +61,15 @@ server.use( function( req, res, next ) {
 require( './routes/sessions' )( server );
 require( './routes/users' )( server );
 require( './routes/attachments' )( server );
+require( './routes/tokens' )( server );
 
 // Error handling
 server.use( ( err, req, res, next ) => {
 
+  console.log( err );
+
   res
-    .sendStatus( err.statusCode );
+    .sendStatus( err.statusCode || 500 );
 
 });
 
