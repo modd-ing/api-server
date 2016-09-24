@@ -33,6 +33,11 @@ seneca
     pin: 'role:api,path:tokens',
     type: 'amqp',
     url: 'amqp://rabbitmq-api'
+  })
+  .client({
+    pin: 'role:api,path:emails',
+    type: 'amqp',
+    url: 'amqp://rabbitmq-api'
   });
 
 module.exports = function() {

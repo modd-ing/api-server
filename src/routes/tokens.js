@@ -84,13 +84,17 @@ module.exports = function( server ) {
 
       }
 
+      let user;
+
       const promise = act({
         role: 'api',
         path: 'users',
         type: 'read',
         cmd: 'getUsers',
         args: queryParams,
-        options: {}
+        options: {
+          hidePrivate: false
+        }
       })
       .then( ( result ) => {
 
@@ -105,14 +109,13 @@ module.exports = function( server ) {
 
         }
 
-        const user = result.data[0],
-          userId = user.id;
+        user = result.data[0];
 
         return act({
           role: 'api',
           path: 'tokens',
           cmd: 'post',
-          userId: userId,
+          userId: user.id,
           type: type
         });
 
@@ -131,7 +134,25 @@ module.exports = function( server ) {
 
         }
 
+        // Token created, now send an email to the user
+        const message = {
+          to: user.email
+        };
+
+        act({
+          role: 'api',
+          path: 'emails',
+          cmd: 'sendEmail',
+          template: 'passwordUpdateRequest',
+          message: message,
+          context: {
+            username: user.username
+          }
+        });
+
         res.sendStatus( 201 );
+
+        return null;
 
       })
       .catch( ( err ) => {
