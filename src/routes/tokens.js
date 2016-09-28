@@ -47,7 +47,8 @@ module.exports = function( server ) {
       }
 
       const allowedType = [
-        'password:update'
+        'password:update',
+        'emailConfirmed:update'
       ];
 
       if ( ! type || -1 === allowedType.indexOf( type ) ) {
@@ -139,14 +140,26 @@ module.exports = function( server ) {
           to: user.email
         };
 
+        const tokenToTemplateHash = {
+          'password:update': 'passwordUpdateRequest',
+          'emailConfirmed:update': 'emailConfirmedUpdateRequest',
+        };
+
+        if ( ! tokenToTemplateHash[ type ] ) {
+
+          return;
+
+        }
+
         act({
           role: 'api',
           path: 'emails',
           cmd: 'sendEmail',
-          template: 'passwordUpdateRequest',
+          template: tokenToTemplateHash[ type ],
           message: message,
           context: {
-            username: user.username
+            username: user.username,
+            token: result.data.id
           }
         });
 
